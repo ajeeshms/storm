@@ -8,16 +8,9 @@
                     'src/lib/sizzle.js',
                     'src/outro.js'
                 ],
-                dest: 'build/storm.js'
+                dest: 'build/Storm.js'
             }
-        },
-        uglify: {
-            js: {
-                files: {
-                    'combined.js': ['combined.js']
-                }
-            }
-        },
+        }
     });
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
