@@ -4,9 +4,10 @@
         concat: {
             js: {
                 src: [
-                    'src/intro.js',
-                    'src/lib/sizzle.js',
-                    'src/outro.js'
+                    //'src/intro.js',
+                    //'src/lib/sizzle.js',
+                    //'src/outro.js'
+                      'src/*'
                 ],
                 dest: 'build/Storm.js'
             }
@@ -16,5 +17,5 @@
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.registerTask('default', ['concat:css', 'cssmin:css', 'concat:js', 'uglify:js']);
+    grunt.registerTask('default', ['concat:js']);
 };
