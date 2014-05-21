@@ -15,3 +15,4 @@
         author: 'Ajeesh M Sudhakaran',
         date: '20/05/2014'
     }
+})(this);
