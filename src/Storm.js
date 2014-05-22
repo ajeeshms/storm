@@ -25,6 +25,15 @@
         }
     };
     // #endregion
+    // #region delayExecute
+    storm.delayExecute = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        }
+    })();
+    // #endregion
 
     // #region Common Helpers
     storm.helpers = {
@@ -66,12 +75,20 @@
                 }
             }
 
-            // get function, to get properties
-            model.prototype.get = function (prop) {
-                return (typeof this._data[prop] == 'function' ? this._data[prop]() : this._data[prop]);
+            // Get value of a single property
+            // get(propertyname) returns specific property
+            // getAll() returns all properties as object
+            model.prototype.get = function () {
+                if (arguments.length == 1) {
+                    var prop = arguments[0];
+                    return (typeof this._data[prop] == 'function' ? this._data[prop]() : this._data[prop]);
+                }
+                else {
+                    return this.getAll();
+                }
             }
 
-            // getAll function, to return all properties as object
+            // Returns values of all properties as object
             model.prototype.getAll = function () {
                 var o = new Object();
                 for (var prop in this._data) {
@@ -80,12 +97,33 @@
                 return o;
             }
 
-            // set function, to set values to properties
-            model.prototype.set = function (prop, value) {
-                if (typeof this._data[prop] != 'function') {
-                    this._data[prop] = value;
+            // Set values to properties
+            // set(object) sets all properties from object
+            // set(propertyname, value) sets single property
+            model.prototype.set = function () {
+                if (arguments.length == 2) {
+                    var prop = arguments[0], value = arguments[1];
+                    if (typeof this._data[prop] != 'function') {
+                        this._data[prop] = value;
+                    }
+                    else { // if property is function, then pass value as argument
+                        this._data[prop](value);
+                    }
+                    return this.get(prop);
                 }
-                return this.get(prop);
+                else if (arguments.length == 1) {
+                    return this.setAll(arguments[0]);
+                }
+            }
+
+            // Set all values to properties
+            // set(object) sets all values from object
+            model.prototype.setAll = function () {
+                var settings = arguments[0];
+                for (var prop in settings) {
+                    this.set(prop, settings[prop]);
+                }
+                return this.getAll();
             }
 
             // Setting Attributes of Model
@@ -95,7 +133,7 @@
                 }
             }
 
-            // Bind Function
+            // Binds a form/property-dom mapping with model
             model.prototype.bind = function () {
                 var me = this;
                 var arg = arguments[0];
@@ -125,7 +163,10 @@
                         if (me.onChange) { me.onChange(e.target); }
                     });
                 }
+                me._mapping = mapping;
+                return me;
             }
+            
 
             // Init Function
             if (!model.prototype.init) { model.prototype.init = function () { }; }
