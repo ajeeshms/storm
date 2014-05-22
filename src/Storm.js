@@ -126,6 +126,39 @@
                 return this.getAll();
             }
 
+            // Synchronises model with server
+            // sync(httpmetod, success, error)
+            model.prototype.sync = function () {
+                var url = (this.url || '');
+                var method = (arguments[0] || 'GET');
+                console.log(this.getAll());
+                return storm.ajax({
+                    url: url,
+                    method: method,
+                    data: this.getAll(),
+                    headers: { Accept: 'application/json' },
+                    success: arguments[2],
+                    error: arguments[3]
+                });
+            }
+
+            // post(success, errot) synchronize model via post method
+            model.prototype.post = function () {
+                return this.sync('POST', arguments[0], arguments[1]);
+            }
+
+            // put(success, errot) synchronize model via put method
+            model.prototype.put = function () {
+                return this.sync('PUT', arguments[0], arguments[1]);
+            }
+
+            // delete(success, errot) synchronize model via delete method
+            model.prototype.delete = function () {
+                return this.sync('DELETE', arguments[0], arguments[1]);
+            }
+
+
+
             // Setting Attributes of Model
             for (var prop in attributes) {
                 if (prop != 'defaults') {
