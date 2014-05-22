@@ -20,7 +20,9 @@
 
     // #region Internal configurations and declarations
     var _st = {
-        onSessionExpiration: undefined // Function to call on Session's Expiration (eg: for ajax calls failure)
+        onSessionExpiration: function () { // Function to call on Session's Expiration (eg: for ajax calls failure)
+            console.log('Session Expired');
+        }
     };
     // #endregion
 
@@ -90,6 +92,38 @@
             for (var prop in attributes) {
                 if (prop != 'defaults') {
                     model.prototype[prop] = attributes[prop];
+                }
+            }
+
+            // Bind Function
+            model.prototype.bind = function () {
+                var me = this;
+                var arg = arguments[0];
+                var mapping = new Object();
+                var $domObj;
+                if (typeof arg == 'string') { // If argument is string, select using jquery
+                    $domObj = $(arg);
+                }
+                else if (typeof arg == 'object' && arg.tagName) { // if argument is dom object, wrap with jquery
+                    $domObj = $(arg);
+                }
+                else if (typeof arg == 'object' &&  arg.jquery) { // else if jQuery object
+                    $domObj = arg;
+                }
+                // if parameter was a dom or jQuery object, then iterate through its children and create property-input mapping
+                if ($domObj) {
+                    $domObj.find('[name]').each(function (i, elem) { // Creating mapping from dom's children
+                        mapping[elem.name.toString()] = $(elem); 
+                    });
+                }
+                // Iterating through mapping and binding change event
+                for (var prop in mapping) {
+                    var $input = mapping[prop].jquery ? mapping[prop] : $(mapping[prop]);  // wrapping with jQuery
+                    $input.change(function (e) {
+                        var property_name = e.target.getAttribute('Name');
+                        me.set(property_name, (isFinite(e.target.value) ? (e.target.value * 1) : e.target.value.trim()));
+                        if (me.onChange) { me.onChange(e.target); }
+                    });
                 }
             }
 
