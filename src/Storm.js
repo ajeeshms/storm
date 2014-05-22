@@ -47,37 +47,56 @@
                 var me = this;
                 // Applying Settings
                 for (var property in settings) {
-                    me[property] = settings[property];
+                    me._data[property] = settings[property];
                 }
 
                 // calling init function, the first function to execute
                 me.init.apply(this, arguments);
             }
-            // Setting Properties
-            for (var property in attributes) {
-                model.prototype[property] = attributes[property];
+
+            // Data object
+            model.prototype._data = new Object();
+
+            // Setting Default properties
+            if (attributes.defaults) {
+                for (var prop in attributes.defaults) {
+                    model.prototype._data[prop] = attributes.defaults[prop];
+                }
             }
-            // Setting Init Function
+
+            // get function, to get properties
+            model.prototype.get = function (prop) {
+                return (typeof this._data[prop] == 'function' ? this._data[prop]() : this._data[prop]);
+            }
+
+            // getAll function, to return all properties as object
+            model.prototype.getAll = function () {
+                var o = new Object();
+                for (var prop in this._data) {
+                    o[prop] = this.get(prop);
+                }
+                return o;
+            }
+
+            // set function, to set values to properties
+            model.prototype.set = function (prop, value) {
+                if (typeof this._data[prop] != 'function') {
+                    this._data[prop] = value;
+                }
+                return this.get(prop);
+            }
+
+            // Setting Attributes of Model
+            for (var prop in attributes) {
+                if (prop != 'defaults') {
+                    model.prototype[prop] = attributes[prop];
+                }
+            }
+
+            // Init Function
             if (!model.prototype.init) { model.prototype.init = function () { }; }
 
-            // If model has a url property, then setup ajax methods
-            if (model.url) {
-
-            }
             return model;
-        },
-        serialize: function (model) {
-            var exclude = ['init', 'onChange', 'onSync'];
-            var o = new Object();
-            for (var prop in model) {
-                if (prop.indexOf('_') == 0 || exclude.indexOf(prop) >= 0) {
-                    continue;
-                }
-                else {
-                    o[prop] = typeof (model[prop]) == 'function' ? model[prop]() : model[prop];
-                }
-            }
-            return o;
         }
     }
     // #endregion
