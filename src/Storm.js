@@ -25,7 +25,18 @@
         }
     };
     // #endregion
+
+    // #region init function
+    // initialize and configure library environment
+    storm.init = function (settings) {
+        if (settings['onSessionExpiration']) {
+            _st.onSessionExpiration = settings.onSessionExpiration;
+        }
+    }
+    // #endregion
+
     // #region delayExecute
+    // delays execution of function for specific interval. consecutive calls within the time interval will be aborted
     storm.delayExecute = (function () {
         var timer = 0;
         return function (callback, ms) {
