@@ -142,7 +142,6 @@
             model.prototype.sync = function () {
                 var url = (this.url || '');
                 var method = (arguments[0] || 'GET');
-                console.log(this.getAll());
                 return storm.ajax({
                     url: url,
                     method: method,
@@ -153,17 +152,17 @@
                 });
             }
 
-            // post(success, errot) synchronize model via post method
+            // post(success, error) synchronize model via post method
             model.prototype.post = function () {
                 return this.sync('POST', arguments[0], arguments[1]);
             }
 
-            // put(success, errot) synchronize model via put method
+            // put(success, error) synchronize model via put method
             model.prototype.put = function () {
                 return this.sync('PUT', arguments[0], arguments[1]);
             }
 
-            // delete(success, errot) synchronize model via delete method
+            // delete(success, error) synchronize model via delete method
             model.prototype.delete = function () {
                 return this.sync('DELETE', arguments[0], arguments[1]);
             }
@@ -194,7 +193,7 @@
                 else if (typeof arg == 'object' && arg.jquery) { // else if jQuery object
                     $domObj = arg;
                 }
-                else { // else it is an actual mapping object
+                else { // else it is an actual property - dom object mapping provided
                     mapping = arg;
                 }
                 
