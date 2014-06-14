@@ -178,6 +178,8 @@
             }
 
             // Binds a form/property-dom mapping with model
+            // Mapping structure { PropertyName : css selector/dom object/jquery object }
+            // It is also possible to map a model directly to form, simply pass form's css selector/dom object/jquery object to bind function
             model.prototype.bind = function () {
                 var me = this;
                 var arg = arguments[0];
@@ -186,12 +188,16 @@
                 if (typeof arg == 'string') { // If argument is string, select using jquery
                     $domObj = $(arg);
                 }
-                else if (typeof arg == 'object' && arg.tagName) { // if argument is dom object, wrap with jquery
+                else if (typeof arg == 'object' && arg.tagName) { // if argument is dom object, wrap with jquery (a tagName property exist in dom objects)
                     $domObj = $(arg);
                 }
-                else if (typeof arg == 'object' &&  arg.jquery) { // else if jQuery object
+                else if (typeof arg == 'object' && arg.jquery) { // else if jQuery object
                     $domObj = arg;
                 }
+                else { // else it is an actual mapping object
+                    mapping = arg;
+                }
+                
                 // if parameter was a dom or jQuery object, then iterate through its children and create property-input mapping
                 if ($domObj) {
                     $domObj.find('[name]').each(function (i, elem) { // Creating mapping from dom's children
