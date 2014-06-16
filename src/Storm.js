@@ -331,10 +331,10 @@
             }
         }
 
-        this.then = function (t_urls) {
+        //this.then = function (t_urls) {
 
-            console.log(t_urls);
-        }
+        //    console.log(t_urls);
+        //}
         return this;
     }
 
