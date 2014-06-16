@@ -277,6 +277,80 @@
     }
     // #endregion
 
+    //#region require
+    storm.require = function (urls, contentType, container, callback) {
+        var _urls = [];
+        container = container.jquery == undefined ? $(container) : container;
+        if (typeof urls == 'string') {
+            _urls.push(urls);
+        }
+        else {
+            _urls = urls;
+        }
+
+        getContent(_urls[0]);
+
+        function getContent(url) {
+            var i = _urls.indexOf(url);
+            $.get(url).done(process).fail(process);
+
+            function process(d) {
+                if (typeof d == 'string') {
+                    switch (contentType) {
+                        case 'style': {
+                            var style = document.createElement('style');
+                            style.type = "text/css";
+                            style.textContent = style.text = d;
+                            //document.body.appendChild(style);
+                            container.append(style);
+                            break;
+                        }
+                        case 'script': {
+                            var script = document.createElement('script');
+                            script.type = 'text/javascript';
+                            script.textContent = script.text = d;
+                            //document.body.appendChild(script);
+                            container.append(script);
+                            break;
+                        }
+                        case 'html': {
+                            container.append(d);
+                            break;
+                        }
+                    }
+                }
+                if (_urls.length - 1 > i) {
+                    getContent(_urls[i + 1]);
+                    return;
+                }
+                else {
+                    if (callback) {
+                        callback();
+                    }
+                }
+            }
+        }
+
+        this.then = function (t_urls) {
+
+            console.log(t_urls);
+        }
+        return this;
+    }
+
+    storm.requireStyle = function (urls, callback) {
+        return storm.require(urls, 'style', 'body', callback);
+    }
+
+    storm.requireScript = function (urls, callback) {
+        return storm.require(urls, 'script', 'body', callback);
+    }
+
+    storm.requireHtml = function (urls, container, callback) {
+        return storm.require(urls, 'html', container, callback);
+    }
+    //#endregion
+
     
     // Exposing Globally
     window.storm = window.st = storm;
