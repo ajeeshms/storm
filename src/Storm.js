@@ -9,7 +9,8 @@
 
     // Creating Instance
     var storm = function () {
-        return new storm();
+        if (!(this instanceof storm))
+            return new storm();
     }
 
     storm.about = {
@@ -283,7 +284,6 @@
 
     }
     // #endregion
-
     
     // Exposing Globally
     window.storm = window.st = storm;
