@@ -58,6 +58,13 @@
                   encodeURIComponent(k) + "=" + encodeURIComponent(v));
             }
             return str.join("&");
+        },
+        positionCenter: function () {
+            var obj = arguments[0];
+            if (!obj.jquery) {
+                obj = $(obj);
+            }
+            obj.css({ top: '50%', left: '50%', margin: obj.height() / 2 * -1 + 'px 0 0 ' + obj.width() / 2 * -1 + 'px' });
         }
     }
     // #endregion
