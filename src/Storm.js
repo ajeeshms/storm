@@ -239,19 +239,23 @@
         settings.method = (settings.method || 'GET');
         settings.data = (settings.data || '');
         settings.headers = (settings.headers || {});
-        settings.dataType = (settings.dataType || 'application/x-www-form-urlencoded');
+        settings.dataType = (settings.dataType || '*/*');
+        settings.contentType = (settings.contentType || 'application/x-www-form-urlencoded; charset=UTF-8');
 
         var xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200 && settings.success) {
-                    try {
+
+                    // If response if JSON, parse string to JSON and return
+                    if (xhr.getResponseHeader('Content-Type') == 'application/json; charset=utf-8') {
                         return settings.success(JSON.parse(xhr.responseText));
                     }
-                    catch (e) {
+                    else {
                         return settings.success(xhr.response);
                     }
+
                 }
                 else if (xhr.status == 401 && _st.onSessionExpiration) {
                     return _st.onSessionExpiration();
@@ -266,7 +270,8 @@
 
         xhr.open(settings.method, settings.url);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.setRequestHeader('Content-Type', settings.dataType);
+        xhr.setRequestHeader('Accept', settings.dataType);
+        xhr.setRequestHeader('Content-Type', settings.contentType);
         for (var h in settings.headers) {
             xhr.setRequestHeader(h.toString(), settings.headers[h].toString());
         }
