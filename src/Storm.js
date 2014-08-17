@@ -1,7 +1,7 @@
 ﻿/*
  * Storm JavaScript MVC Framework v0.1.0
  * Copyright 2014 Ajeesh M Sudhakaran
- * Date: 20/05/2014
+ * Date: 17/08/2014
 */
 (function (window, $) {
 
@@ -14,9 +14,9 @@
     }
 
     storm.about = {
-        version: '0.1.0',
+        version: '1.0.0',
         author: 'Ajeesh M Sudhakaran',
-        date: '20/05/2014'
+        date: '17/08/2014'
     }
 
     // #region Internal configurations and declarations
@@ -230,6 +230,130 @@
 
             return model;
         }
+    }
+    // #endregion
+
+    //#region collection
+    storm.collection = function (settings) {
+
+        settings = settings || new Object();
+
+        // Internal collection
+        var collection = function () {
+            var me = this;
+            me._data = [];
+        }
+
+        // To inset data into collection
+        collection.prototype.add = function (data) {
+            this._data.push(data);
+            return this;
+        }
+
+        // Returns first element to filter function. If no element found, returns undefined
+        collection.prototype.firstOrDefault = function (func) {
+            return this._data.filter(func)[0];
+        }
+
+        // Empty the collection
+        collection.prototype.empty = function () {
+            this._data = [];
+            return this;
+        }
+
+        // Add multiple data into collection
+        collection.prototype.insert = function (items) {
+            if (Object.prototype.toString.call(items) == '[object Array]') {
+                for (var i = 0; i < items.length ; i++) {
+                    this.add(items[i]);
+                }
+            }
+            else {
+                this.add(items);
+            }
+            return this;
+        }
+
+        // Removes specific data from collection
+        collection.prototype.remove = function (data) {
+            var idx = this._data.indexOf(data);
+            this._data.splice(idx, 1);
+            return this;
+        }
+
+        // Remove element from specific index
+        collection.prototype.removeAt = function (index) {
+            this._data.splice(i, 1);
+            return this;
+        }
+
+        // Replace a data item in collection by new one
+        collection.prototype.replace = function (data, newData) {
+            var idx = this._data.indexOf(data);
+            if (idx >= 0) {
+                this._data[idx] = newData;
+            }
+            return this;
+        }
+
+        // Select from each data in collection and return
+        collection.prototype.select = function (func) {
+            
+            var result = [];
+
+            for (var i = 0; i < this._data.length; i++) {
+                var d = func(this._data[i]);
+                if (d) {
+                    result.push(d);
+                }
+            }
+
+            return result;
+        }
+
+        collection.prototype.where = function (func) {
+            return this._data.filter(func);
+        }
+        
+        // Collections instance, which will be returned
+        var collection_instance = new collection();
+        
+        // Applying settings to instance
+        for (var prop in settings) {
+            collection_instance[prop] = settings[prop];
+        }
+        
+        // If expiry not specified, set 0 for default
+        if (!settings.expiry) {
+            collection_instance.expiry = 0;
+        }
+
+        // If onExpiry event not specified, create one which returns true.
+        if (!settings.onExpiry) {
+            collection_instance.onExpiry = function () {
+                return true;
+            }
+        }
+
+        // Expiration of collection's data. 
+        // Set a timeout in minutes. When collection expires, it will fetch data from server
+        if (collection_instance.expiry > 0 && collection_instance.sync) {
+            
+            // When onExpiry event returns false, automatic server sync will not be performed
+            // Return true or nothing from onExpiry event to sync
+            if (collection_instance.onExpiry != false) {
+                storm.ajax({
+                    url: collection_instance.sync.url,
+                    method: collection_instance.sync.method,
+                    success: function (data) {
+                        collection_instance.empty().insert(data);
+                    }
+                });
+            }
+        }
+
+        return collection_instance;
+        
     }
     // #endregion
 
