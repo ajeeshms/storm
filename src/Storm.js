@@ -311,10 +311,18 @@
             return result;
         }
 
+        // Returns underlying array
+        collection.prototype.toArray = function () {
+            return this._data;
+        }
+
         collection.prototype.where = function (func) {
             return this._data.filter(func);
         }
+
         
+        // Instance specific functionalities
+
         // Collections instance, which will be returned
         var collection_instance = new collection();
         
