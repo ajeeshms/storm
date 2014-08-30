@@ -49,6 +49,14 @@
 
     // #region Common Helpers
     storm.helpers = {
+        guid: function () {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                           .toString(16)
+                           .substring(1);
+            };
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        },
         // Encode given object to URI string
         encodeURI: function (obj, prefix) {
             var str = [];
@@ -248,6 +256,11 @@
         collection.prototype.add = function (data) {
             this._data.push(data);
             return this;
+        }
+
+        // Returns number of elements in collection
+        collection.prototype.count = function () {
+            return this._data.length;
         }
 
         // Returns first element to filter function. If no element found, returns undefined
