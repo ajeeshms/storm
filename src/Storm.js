@@ -394,7 +394,7 @@
                 if (xhr.status == 200 && settings.success) {
 
                     // If response if JSON, parse string to JSON and return
-                    if (xhr.getResponseHeader('Content-Type') == 'application/json; charset=utf-8') {
+                    if (xhr.getResponseHeader('Content-Type') == 'application/json; charset=utf-8' && xhr.responseText.length > 0) {
                         return settings.success(JSON.parse(xhr.responseText));
                     }
                     else {
