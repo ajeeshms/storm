@@ -83,6 +83,11 @@
         extend: function (attributes) {
             var model = function (settings) {
                 var me = this;
+
+                // _data object is being replaced by new instance.
+                // This is required for all instance of the model to have unique _data property
+                me._data = Object.create(me._data);
+
                 // Applying Settings
                 for (var property in settings) {
                     me._data[property] = settings[property];
