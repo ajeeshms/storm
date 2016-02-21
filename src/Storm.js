@@ -63,7 +63,7 @@
             for (var p in obj) {
                 var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
                 str.push(typeof v == "object" ?
-                  serialize(v, k) :
+                  storm.helpers.encodeURI(v, k) :
                   encodeURIComponent(k) + "=" + encodeURIComponent(v));
             }
             return str.join("&");
